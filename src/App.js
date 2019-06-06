@@ -2,7 +2,7 @@ import React from 'react';
 
 /** 
  * * Components router dom */
-import { Link, Route } from "react-router-dom";
+import { Link, Route, Redirect } from "react-router-dom";
 
 /** 
  * * Components Material-ui */
@@ -59,7 +59,7 @@ class App extends React.Component {
     })
   }
 
-    /**
+  /**
    * !Elimina item de la lista
    */
   deleteNote = (idNote) => {
@@ -69,7 +69,7 @@ class App extends React.Component {
     // })
     // notes.splice(idx, 1);
     
-    var newNotes = notes.filter(function(key) { // devuelve la posicio del array a borrar 
+    var newNotes = notes.filter(function(key) { // crea el nuevo array sin el eliminado 
       return key.id !== idNote;
     })
 
@@ -77,6 +77,19 @@ class App extends React.Component {
       notes: newNotes
     })
   }
+
+  /**
+   * !Busca si la nota existe y la retorna
+   */
+  filterNote = (idNote) => {
+    const notes = this.state.notes;
+    var note = notes.filter(note =>{
+      return note.id === parseInt(idNote)
+    })
+    return note[0];
+  }
+
+
 
   /**
    * !Limpia los inputs
@@ -117,12 +130,10 @@ class App extends React.Component {
               }
             />
             <Route path="/view/:id" 
-              render={ props => (
-                <Note 
-                  {...props}
-                  notes={this.state.notes}
-                ></Note>
-                ) 
+              render={ props => {
+                const note = this.filterNote(props.match.params.id)
+                return note ? <Note note={note}></Note> : <Redirect to="/"/>
+                }
               }
             />
           </Grid>
